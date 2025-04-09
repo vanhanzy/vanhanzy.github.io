@@ -16,14 +16,14 @@ pipeline {
             agent {
                 docker {
                     image 'docker:latest'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock -v $HOME:$HOME'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
             steps {
-                sh 'docker version' // ✅ Verifica que sí existe docker
+                sh 'docker version' // Verifica que funciona
                 sh 'docker build -t $IMAGE_NAME .'
-                sh "minikube image load $IMAGE_NAME"
-                sh "kubectl rollout restart deployment vanhanzy"
+                sh 'minikube image load $IMAGE_NAME'
+                sh 'kubectl rollout restart deployment vanhanzy'
             }
         }
     }
