@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'docker:latest'
+            image 'docker:20.10-dind'
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
@@ -11,20 +11,20 @@ pipeline {
     }
 
     stages {
-        stage('Probar Docker') {
+        stage('Clonar Repo') {
             steps {
-                sh 'docker version'
-                sh 'docker ps'
+                git 'https://github.com/vanhanzy/vanhanzy.github.io.git'
             }
         }
 
-        stage('Build Imagen Docker') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                sh 'docker version'  // Verifica que Docker esté disponible
+                sh 'docker build -t $IMAGE_NAME .'  // Construye la imagen Docker
             }
         }
 
-        stage('Subir Imagen a Minikube') {
+        stage('Cargar Imagen a Minikube') {
             steps {
                 sh 'minikube image load $IMAGE_NAME'
             }
