@@ -1,11 +1,23 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:latest'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     environment {
         IMAGE_NAME = "vanhanzy-web"
     }
 
     stages {
+        stage('Probar Docker') {
+            steps {
+                sh 'docker version'
+                sh 'docker ps'
+            }
+        }
+
         stage('Build Imagen Docker') {
             steps {
                 sh 'docker build -t $IMAGE_NAME .'
