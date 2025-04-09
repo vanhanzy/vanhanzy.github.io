@@ -6,23 +6,20 @@ pipeline {
     }
 
     stages {
-        stage('Clonar Repo') {
+        stage('Build Imagen Docker') {
             steps {
-                git 'https://github.com/vanhanzy/vanhanzy.github.io.git'
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
 
-        stage('Build & Deploy') {
-            agent {
-                docker {
-                    image 'docker:latest'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
+        stage('Subir Imagen a Minikube') {
             steps {
-                sh 'docker version' // Verifica que funciona
-                sh 'docker build -t $IMAGE_NAME .'
                 sh 'minikube image load $IMAGE_NAME'
+            }
+        }
+
+        stage('Desplegar en Kubernetes') {
+            steps {
                 sh 'kubectl rollout restart deployment vanhanzy'
             }
         }
