@@ -1,38 +1,43 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:20.10-dind'  // Usamos Docker-in-Docker para el pipeline
-            args '-v /var/run/docker.sock:/var/run/docker.sock'  // Para acceso al Docker del host
-        }
-    }
+    agent any
 
     environment {
         IMAGE_NAME = "vanhanzy-web"
     }
 
     stages {
-        stage('Clonar Repo') {
+        stage('Checkout') {
             steps {
+                // Clonar el repositorio
                 git 'https://github.com/vanhanzy/vanhanzy.github.io.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker version'  // Verifica que Docker esté disponible
-                sh 'docker build -t $IMAGE_NAME .'  // Construye la imagen Docker
+                script {
+                    // Construir la imagen de Docker
+                    sh 'docker build -t $IMAGE_NAME .'
+                }
             }
         }
 
-        stage('Cargar Imagen a Minikube') {
+        stage('Deploy to Minikube') {
             steps {
-                sh 'minikube image load $IMAGE_NAME'
+                script {
+                    // Cargar la imagen en Minikube
+                    sh "minikube image load $IMAGE_NAME"
+                }
             }
         }
 
-        stage('Desplegar en Kubernetes') {
+        stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl rollout restart deployment vanhanzy'
+                script {
+                    // Realizar el despliegue en Kubernetes
+                    sh 'kubectl apply -f k8s/deployment.yaml'
+                    sh 'kubectl apply -f k8s/service.yaml'
+                }
             }
         }
     }
