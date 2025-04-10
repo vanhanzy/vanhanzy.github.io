@@ -14,34 +14,22 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh '''
-                        eval $(minikube -p minikube docker-env)
-                        docker build -t $IMAGE_NAME .
-                    '''
-                }
+                sh "docker build -t $IMAGE_NAME ."
             }
         }
 
-        stage('Deploy to Minikube') {
+        stage('Load into Minikube') {
             steps {
-                script {
-                    sh '''
-                        eval $(minikube -p minikube docker-env)
-                        minikube image load $IMAGE_NAME
-                    '''
-                }
+                sh "minikube image load $IMAGE_NAME"
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    sh '''
-                        kubectl apply -f k8s/deployment.yaml
-                        kubectl apply -f k8s/service.yaml
-                    '''
-                }
+                sh '''
+                    kubectl apply -f k8s/deployment.yaml
+                    kubectl apply -f k8s/service.yaml
+                '''
             }
         }
     }
