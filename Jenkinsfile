@@ -18,7 +18,7 @@ pipeline {
             }
         }
 
-        stage('Load into Minikube') {
+        stage('Deploy to Minikube') {
             steps {
                 sh "minikube image load $IMAGE_NAME"
             }
