@@ -16,8 +16,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Construir la imagen de Docker
-                    sh 'docker build -t $IMAGE_NAME .'
+                    // Construir imagen usando Docker de Minikube
+                    sh 'eval $(minikube -p minikube docker-env) && docker build -t $IMAGE_NAME .'
                 }
             }
         }
@@ -25,8 +25,8 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 script {
-                    // Cargar la imagen en Minikube
-                    sh "minikube image load $IMAGE_NAME"
+                    // Cargar imagen a Minikube
+                    sh 'eval $(minikube -p minikube docker-env) && minikube image load $IMAGE_NAME'
                 }
             }
         }
@@ -34,7 +34,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Realizar el despliegue en Kubernetes
+                    // Aplicar manifiestos en K8s
                     sh 'kubectl apply -f k8s/deployment.yaml'
                     sh 'kubectl apply -f k8s/service.yaml'
                 }
