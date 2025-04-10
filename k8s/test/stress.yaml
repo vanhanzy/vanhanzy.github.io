@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ram-killer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ram-killer
+  template:
+    metadata:
+      labels:
+        app: ram-killer
+    spec:
+      containers:
+      - name: stress
+        image: polinux/stress
+        command: ["stress"]
+        args: ["--vm", "1", "--vm-bytes", "500M", "--vm-hang", "1"]
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"

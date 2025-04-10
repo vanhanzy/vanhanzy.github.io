@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vanhanzy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vanhanzy
+  template:
+    metadata:
+      labels:
+        app: vanhanzy
+    spec:
+      containers:
+      - name: vanhanzy
+        image: vanhanzy-web
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+          limits:
+            cpu: "200m"
